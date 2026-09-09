@@ -15,7 +15,8 @@ import java.net.URL
 data class Channel(
     val name: String,
     val url: String,
-    val category: String = "All"
+    val category: String = "All",
+    val logo: String = ""
 )
 
 class ChannelViewModel : ViewModel() {
@@ -55,26 +56,13 @@ class MainActivity : AppCompatActivity() {
         viewModel =
             ViewModelProvider(this)[ChannelViewModel::class.java]
 
-        urlInput =
-            findViewById(R.id.urlInput)
-
-        loadUrlButton =
-            findViewById(R.id.loadButton)
-
-        fileButton =
-            findViewById(R.id.fileButton)
-
-        gridView =
-            findViewById(R.id.channelGrid)
-
-        progress =
-            findViewById(R.id.progress)
-
-        searchInput =
-            findViewById(R.id.searchInput)
-
-        categorySpinner =
-            findViewById(R.id.categorySpinner)
+        urlInput = findViewById(R.id.urlInput)
+        loadUrlButton = findViewById(R.id.loadButton)
+        fileButton = findViewById(R.id.fileButton)
+        gridView = findViewById(R.id.channelGrid)
+        progress = findViewById(R.id.progress)
+        searchInput = findViewById(R.id.searchInput)
+        categorySpinner = findViewById(R.id.categorySpinner)
 
         if (viewModel.channels.isNotEmpty()) {
             updateCategories()
@@ -182,27 +170,19 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    private fun loadM3U(
-        m3uUrl: String
-    ) {
+    private fun loadM3U(url: String) {
 
-        progress.visibility =
-            View.VISIBLE
+        progress.visibility = View.VISIBLE
 
-        loadUrlButton.isEnabled =
-            false
+        loadUrlButton.isEnabled = false
+        fileButton.isEnabled = false
 
-        fileButton.isEnabled =
-            false
-
-        CoroutineScope(
-            Dispatchers.IO
-        ).launch {
+        CoroutineScope(Dispatchers.IO).launch {
 
             try {
 
                 val text =
-                    URL(m3uUrl)
+                    URL(url)
                         .openStream()
                         .bufferedReader()
                         .use {
@@ -212,24 +192,18 @@ class MainActivity : AppCompatActivity() {
                 val result =
                     parseM3U(text)
 
-                withContext(
-                    Dispatchers.Main
-                ) {
+                withContext(Dispatchers.Main) {
 
                     viewModel.channels.clear()
                     viewModel.channels.addAll(result)
 
                     updateCategories()
-                    showChannels(viewModel.channels)
+                    showChannels(result)
 
-                    progress.visibility =
-                        View.GONE
+                    progress.visibility = View.GONE
 
-                    loadUrlButton.isEnabled =
-                        true
-
-                    fileButton.isEnabled =
-                        true
+                    loadUrlButton.isEnabled = true
+                    fileButton.isEnabled = true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -240,22 +214,16 @@ class MainActivity : AppCompatActivity() {
 
             } catch (e: Exception) {
 
-                withContext(
-                    Dispatchers.Main
-                ) {
+                withContext(Dispatchers.Main) {
 
-                    progress.visibility =
-                        View.GONE
+                    progress.visibility = View.GONE
 
-                    loadUrlButton.isEnabled =
-                        true
-
-                    fileButton.isEnabled =
-                        true
+                    loadUrlButton.isEnabled = true
+                    fileButton.isEnabled = true
 
                     Toast.makeText(
                         this@MainActivity,
-                        "M3U / M3U8 Load မအောင်မြင်ပါ",
+                        "M3U Load မအောင်မြင်ပါ",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -263,22 +231,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadM3UFile(
-        uri: Uri
-    ) {
+    private fun loadM3UFile(uri: Uri) {
 
-        progress.visibility =
-            View.VISIBLE
+        progress.visibility = View.VISIBLE
 
-        loadUrlButton.isEnabled =
-            false
+        loadUrlButton.isEnabled = false
+        fileButton.isEnabled = false
 
-        fileButton.isEnabled =
-            false
-
-        CoroutineScope(
-            Dispatchers.IO
-        ).launch {
+        CoroutineScope(Dispatchers.IO).launch {
 
             try {
 
@@ -289,31 +249,23 @@ class MainActivity : AppCompatActivity() {
                         ?.use {
                             it.readText()
                         }
-                        ?: throw Exception(
-                            "File မဖတ်နိုင်ပါ"
-                        )
+                        ?: throw Exception("File မဖတ်နိုင်ပါ")
 
                 val result =
                     parseM3U(text)
 
-                withContext(
-                    Dispatchers.Main
-                ) {
+                withContext(Dispatchers.Main) {
 
                     viewModel.channels.clear()
                     viewModel.channels.addAll(result)
 
                     updateCategories()
-                    showChannels(viewModel.channels)
+                    showChannels(result)
 
-                    progress.visibility =
-                        View.GONE
+                    progress.visibility = View.GONE
 
-                    loadUrlButton.isEnabled =
-                        true
-
-                    fileButton.isEnabled =
-                        true
+                    loadUrlButton.isEnabled = true
+                    fileButton.isEnabled = true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -324,18 +276,12 @@ class MainActivity : AppCompatActivity() {
 
             } catch (e: Exception) {
 
-                withContext(
-                    Dispatchers.Main
-                ) {
+                withContext(Dispatchers.Main) {
 
-                    progress.visibility =
-                        View.GONE
+                    progress.visibility = View.GONE
 
-                    loadUrlButton.isEnabled =
-                        true
-
-                    fileButton.isEnabled =
-                        true
+                    loadUrlButton.isEnabled = true
+                    fileButton.isEnabled = true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -364,15 +310,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val adapter =
+        categorySpinner.adapter =
             ArrayAdapter(
                 this,
                 android.R.layout.simple_spinner_dropdown_item,
                 categories
             )
-
-        categorySpinner.adapter =
-            adapter
     }
 
     private fun filterChannels() {
@@ -456,8 +399,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        gridView.adapter =
-            adapter
+        gridView.adapter = adapter
     }
 
     private fun parseM3U(
@@ -478,12 +420,11 @@ class MainActivity : AppCompatActivity() {
 
         var channelName = ""
         var category = "All"
+        var logo = ""
 
         for (line in lines) {
 
-            if (
-                line.startsWith("#EXTINF")
-            ) {
+            if (line.startsWith("#EXTINF")) {
 
                 channelName =
                     line.substringAfter(
@@ -500,6 +441,15 @@ class MainActivity : AppCompatActivity() {
                     group?.groupValues?.get(1)
                         ?: "All"
 
+                val logoMatch =
+                    Regex(
+                        """tvg-logo="([^"]*)""""
+                    ).find(line)
+
+                logo =
+                    logoMatch?.groupValues?.get(1)
+                        ?: ""
+
             } else if (
                 !line.startsWith("#") &&
                 channelName.isNotEmpty()
@@ -509,12 +459,14 @@ class MainActivity : AppCompatActivity() {
                     Channel(
                         name = channelName,
                         url = line,
-                        category = category
+                        category = category,
+                        logo = logo
                     )
                 )
 
                 channelName = ""
                 category = "All"
+                logo = ""
             }
         }
 
