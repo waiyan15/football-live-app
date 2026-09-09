@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:hint="M3U / M3U8 URL"
-        android:hintTextColor="#8A949E"
+        
         android:textColor="#FFFFFF"
         android:inputType="textUri"
         android:singleLine="true"
