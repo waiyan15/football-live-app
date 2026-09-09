@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="165dp"
+    android:layout_height="175dp"
     android:layout_margin="4dp"
     app:cardBackgroundColor="#151B22"
     app:cardCornerRadius="16dp"
@@ -12,44 +12,78 @@
     app:strokeColor="#26313D"
     app:strokeWidth="1dp">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="10dp">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/channelLogo"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:src="@android:drawable/ic_media_play"
-            android:scaleType="fitCenter"
-            android:background="#202A35"
-            android:padding="10dp" />
-
-        <TextView
-            android:id="@+id/channelName"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Channel Name"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
             android:gravity="center"
-            android:maxLines="2"
-            android:ellipsize="end"
-            android:layout_marginTop="8dp" />
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/channelLogo"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:src="@android:drawable/ic_media_play"
+                android:scaleType="fitCenter"
+                android:background="#202A35"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/channelName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Channel Name"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/channelCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sports"
+                android:textColor="#8FA0B0"
+                android:textSize="11sp"
+                android:layout_marginTop="3dp" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/channelCategory"
+            android:id="@+id/liveBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sports"
-            android:textColor="#8FA0B0"
-            android:textSize="11sp"
-            android:layout_marginTop="3dp" />
+            android:text="● LIVE"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:paddingStart="7dp"
+            android:paddingEnd="7dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_gravity="top|start"
+            android:layout_margin="8dp"
+            android:background="#D32F2F" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/favoriteButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="♡"
+            android:textColor="#FFFFFF"
+            android:textSize="25sp"
+            android:gravity="center"
+            android:layout_gravity="top|end"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>
