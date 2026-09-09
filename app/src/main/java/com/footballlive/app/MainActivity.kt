@@ -26,6 +26,8 @@ class ChannelViewModel : ViewModel() {
     val channels = ArrayList<Channel>()
 
     var savedUrl: String = ""
+
+    var favoritesOnly: Boolean = false
 }
 
 class MainActivity : AppCompatActivity() {
@@ -38,7 +40,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchInput: EditText
     private lateinit var categorySpinner: Spinner
 
+    private lateinit var navHome: TextView
+    private lateinit var navChannels: TextView
+    private lateinit var navScores: TextView
+    private lateinit var navFavorites: TextView
+
     private lateinit var viewModel: ChannelViewModel
+
+    private val prefs by lazy {
+        getSharedPreferences(
+            "football_live_prefs",
+            MODE_PRIVATE
+        )
+    }
 
     private val filePicker =
         registerForActivityResult(
@@ -58,27 +72,61 @@ class MainActivity : AppCompatActivity() {
         viewModel =
             ViewModelProvider(this)[ChannelViewModel::class.java]
 
-        urlInput = findViewById(R.id.urlInput)
-        loadUrlButton = findViewById(R.id.loadButton)
-        fileButton = findViewById(R.id.fileButton)
-        gridView = findViewById(R.id.channelGrid)
-        progress = findViewById(R.id.progress)
-        searchInput = findViewById(R.id.searchInput)
-        categorySpinner = findViewById(R.id.categorySpinner)
+        urlInput =
+            findViewById(R.id.urlInput)
+
+        loadUrlButton =
+            findViewById(R.id.loadButton)
+
+        fileButton =
+            findViewById(R.id.fileButton)
+
+        gridView =
+            findViewById(R.id.channelGrid)
+
+        progress =
+            findViewById(R.id.progress)
+
+        searchInput =
+            findViewById(R.id.searchInput)
+
+        categorySpinner =
+            findViewById(R.id.categorySpinner)
+
+        navHome =
+            findViewById(R.id.navHome)
+
+        navChannels =
+            findViewById(R.id.navChannels)
+
+        navScores =
+            findViewById(R.id.navScores)
+
+        navFavorites =
+            findViewById(R.id.navFavorites)
 
         if (viewModel.channels.isNotEmpty()) {
+
             updateCategories()
-            showChannels(viewModel.channels)
+
+            showChannels(
+                viewModel.channels
+            )
         }
 
         if (viewModel.savedUrl.isNotEmpty()) {
-            urlInput.setText(viewModel.savedUrl)
+
+            urlInput.setText(
+                viewModel.savedUrl
+            )
         }
 
         loadUrlButton.setOnClickListener {
 
             val url =
-                urlInput.text.toString().trim()
+                urlInput.text
+                    .toString()
+                    .trim()
 
             if (url.isEmpty()) {
 
@@ -90,19 +138,23 @@ class MainActivity : AppCompatActivity() {
 
             } else {
 
-                viewModel.savedUrl = url
+                viewModel.savedUrl =
+                    url
+
                 loadM3U(url)
             }
         }
 
         fileButton.setOnClickListener {
+
             filePicker.launch("*/*")
         }
 
         gridView.setOnItemClickListener { _, _, position, _ ->
 
             val adapter =
-                gridView.adapter as? ArrayAdapter<Channel>
+                gridView.adapter
+                    as? ArrayAdapter<Channel>
 
             val channel =
                 adapter?.getItem(position)
@@ -145,6 +197,7 @@ class MainActivity : AppCompatActivity() {
                     before: Int,
                     count: Int
                 ) {
+
                     filterChannels()
                 }
 
@@ -163,6 +216,7 @@ class MainActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
+
                     filterChannels()
                 }
 
@@ -170,6 +224,75 @@ class MainActivity : AppCompatActivity() {
                     parent: AdapterView<*>?
                 ) {}
             }
+
+        navHome.setOnClickListener {
+
+            viewModel.favoritesOnly =
+                false
+
+            searchInput.setText("")
+
+            if (viewModel.channels.isNotEmpty()) {
+
+                showChannels(
+                    viewModel.channels
+                )
+            }
+
+            Toast.makeText(
+                this,
+                "Home",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        navChannels.setOnClickListener {
+
+            viewModel.favoritesOnly =
+                false
+
+            filterChannels()
+        }
+
+        navScores.setOnClickListener {
+
+            Toast.makeText(
+                this,
+                "Live Scores မကြာခင် ထည့်ပေးမယ်",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        navFavorites.setOnClickListener {
+
+            viewModel.favoritesOnly =
+                true
+
+            filterChannels()
+        }
+    }
+
+    private fun isFavorite(
+        channel: Channel
+    ): Boolean {
+
+        return prefs.getBoolean(
+            "fav_${channel.url}",
+            false
+        )
+    }
+
+    private fun setFavorite(
+        channel: Channel,
+        favorite: Boolean
+    ) {
+
+        prefs.edit()
+            .putBoolean(
+                "fav_${channel.url}",
+                favorite
+            )
+            .apply()
     }
 
     private fun loadM3U(
@@ -191,13 +314,30 @@ class MainActivity : AppCompatActivity() {
 
             try {
 
-                val text =
+                val connection =
                     URL(url)
-                        .openStream()
+                        .openConnection()
+                        as HttpURLConnection
+
+                connection.connectTimeout =
+                    15000
+
+                connection.readTimeout =
+                    20000
+
+                connection.requestMethod =
+                    "GET"
+
+                connection.connect()
+
+                val text =
+                    connection.inputStream
                         .bufferedReader()
                         .use {
                             it.readText()
                         }
+
+                connection.disconnect()
 
                 val result =
                     parseM3U(text)
@@ -207,10 +347,19 @@ class MainActivity : AppCompatActivity() {
                 ) {
 
                     viewModel.channels.clear()
-                    viewModel.channels.addAll(result)
+
+                    viewModel.channels.addAll(
+                        result
+                    )
+
+                    viewModel.favoritesOnly =
+                        false
 
                     updateCategories()
-                    showChannels(result)
+
+                    showChannels(
+                        result
+                    )
 
                     progress.visibility =
                         View.GONE
@@ -291,10 +440,19 @@ class MainActivity : AppCompatActivity() {
                 ) {
 
                     viewModel.channels.clear()
-                    viewModel.channels.addAll(result)
+
+                    viewModel.channels.addAll(
+                        result
+                    )
+
+                    viewModel.favoritesOnly =
+                        false
 
                     updateCategories()
-                    showChannels(result)
+
+                    showChannels(
+                        result
+                    )
 
                     progress.visibility =
                         View.GONE
@@ -348,9 +506,14 @@ class MainActivity : AppCompatActivity() {
 
             if (
                 it.category.isNotBlank() &&
-                !categories.contains(it.category)
+                !categories.contains(
+                    it.category
+                )
             ) {
-                categories.add(it.category)
+
+                categories.add(
+                    it.category
+                )
             }
         }
 
@@ -375,7 +538,7 @@ class MainActivity : AppCompatActivity() {
                 ?.toString()
                 ?: "All"
 
-        val filtered =
+        var filtered =
             viewModel.channels.filter {
 
                 val nameMatch =
@@ -387,10 +550,21 @@ class MainActivity : AppCompatActivity() {
                     category == "All" ||
                     it.category == category
 
-                nameMatch && categoryMatch
+                nameMatch &&
+                    categoryMatch
             }
 
-        showChannels(filtered)
+        if (viewModel.favoritesOnly) {
+
+            filtered =
+                filtered.filter {
+                    isFavorite(it)
+                }
+        }
+
+        showChannels(
+            filtered
+        )
     }
 
     private fun showChannels(
@@ -436,6 +610,11 @@ class MainActivity : AppCompatActivity() {
                             R.id.channelLogo
                         )
 
+                    val favoriteButton =
+                        view.findViewById<TextView>(
+                            R.id.favoriteButton
+                        )
+
                     name.text =
                         channel?.name
                             ?: "Unknown Channel"
@@ -457,6 +636,59 @@ class MainActivity : AppCompatActivity() {
                             channel.logo,
                             logo
                         )
+                    }
+
+                    if (channel != null) {
+
+                        favoriteButton.text =
+                            if (isFavorite(channel)) {
+                                "♥"
+                            } else {
+                                "♡"
+                            }
+
+                        favoriteButton.setOnClickListener {
+
+                            val newState =
+                                !isFavorite(channel)
+
+                            setFavorite(
+                                channel,
+                                newState
+                            )
+
+                            favoriteButton.text =
+                                if (newState) {
+                                    "♥"
+                                } else {
+                                    "♡"
+                                }
+
+                            if (newState) {
+
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Favorites ထဲထည့်ပြီးပါပြီ",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                            } else {
+
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Favorites ကနေ ဖယ်ပြီးပါပြီ",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+
+                            if (
+                                viewModel.favoritesOnly &&
+                                !newState
+                            ) {
+
+                                filterChannels()
+                            }
+                        }
                     }
 
                     return view
@@ -514,7 +746,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
             } catch (_: Exception) {
-                // Logo မရရင် default icon ကိုပဲပြ
+                // Default icon ကိုပဲပြမယ်
             }
         }
     }
@@ -557,7 +789,9 @@ class MainActivity : AppCompatActivity() {
                     ).find(line)
 
                 category =
-                    group?.groupValues?.get(1)
+                    group
+                        ?.groupValues
+                        ?.get(1)
                         ?: "All"
 
                 val logoMatch =
@@ -566,7 +800,9 @@ class MainActivity : AppCompatActivity() {
                     ).find(line)
 
                 logo =
-                    logoMatch?.groupValues?.get(1)
+                    logoMatch
+                        ?.groupValues
+                        ?.get(1)
                         ?: ""
 
             } else if (
