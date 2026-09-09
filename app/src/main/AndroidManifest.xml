@@ -8,7 +8,7 @@
         android:allowBackup="true"
         android:label="Football Live"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat">
+        android:theme="@style/Theme.FootballLive">
 
         <activity
             android:name=".PlayerActivity"
