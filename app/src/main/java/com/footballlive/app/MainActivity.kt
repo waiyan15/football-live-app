@@ -1,6 +1,7 @@
 package com.footballlive.app
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.*
+import java.net.HttpURLConnection
 import java.net.URL
 
 data class Channel(
@@ -170,14 +172,22 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    private fun loadM3U(url: String) {
+    private fun loadM3U(
+        url: String
+    ) {
 
-        progress.visibility = View.VISIBLE
+        progress.visibility =
+            View.VISIBLE
 
-        loadUrlButton.isEnabled = false
-        fileButton.isEnabled = false
+        loadUrlButton.isEnabled =
+            false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        fileButton.isEnabled =
+            false
+
+        CoroutineScope(
+            Dispatchers.IO
+        ).launch {
 
             try {
 
@@ -192,7 +202,9 @@ class MainActivity : AppCompatActivity() {
                 val result =
                     parseM3U(text)
 
-                withContext(Dispatchers.Main) {
+                withContext(
+                    Dispatchers.Main
+                ) {
 
                     viewModel.channels.clear()
                     viewModel.channels.addAll(result)
@@ -200,10 +212,14 @@ class MainActivity : AppCompatActivity() {
                     updateCategories()
                     showChannels(result)
 
-                    progress.visibility = View.GONE
+                    progress.visibility =
+                        View.GONE
 
-                    loadUrlButton.isEnabled = true
-                    fileButton.isEnabled = true
+                    loadUrlButton.isEnabled =
+                        true
+
+                    fileButton.isEnabled =
+                        true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -214,12 +230,18 @@ class MainActivity : AppCompatActivity() {
 
             } catch (e: Exception) {
 
-                withContext(Dispatchers.Main) {
+                withContext(
+                    Dispatchers.Main
+                ) {
 
-                    progress.visibility = View.GONE
+                    progress.visibility =
+                        View.GONE
 
-                    loadUrlButton.isEnabled = true
-                    fileButton.isEnabled = true
+                    loadUrlButton.isEnabled =
+                        true
+
+                    fileButton.isEnabled =
+                        true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -231,14 +253,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadM3UFile(uri: Uri) {
+    private fun loadM3UFile(
+        uri: Uri
+    ) {
 
-        progress.visibility = View.VISIBLE
+        progress.visibility =
+            View.VISIBLE
 
-        loadUrlButton.isEnabled = false
-        fileButton.isEnabled = false
+        loadUrlButton.isEnabled =
+            false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        fileButton.isEnabled =
+            false
+
+        CoroutineScope(
+            Dispatchers.IO
+        ).launch {
 
             try {
 
@@ -249,12 +279,16 @@ class MainActivity : AppCompatActivity() {
                         ?.use {
                             it.readText()
                         }
-                        ?: throw Exception("File မဖတ်နိုင်ပါ")
+                        ?: throw Exception(
+                            "File မဖတ်နိုင်ပါ"
+                        )
 
                 val result =
                     parseM3U(text)
 
-                withContext(Dispatchers.Main) {
+                withContext(
+                    Dispatchers.Main
+                ) {
 
                     viewModel.channels.clear()
                     viewModel.channels.addAll(result)
@@ -262,10 +296,14 @@ class MainActivity : AppCompatActivity() {
                     updateCategories()
                     showChannels(result)
 
-                    progress.visibility = View.GONE
+                    progress.visibility =
+                        View.GONE
 
-                    loadUrlButton.isEnabled = true
-                    fileButton.isEnabled = true
+                    loadUrlButton.isEnabled =
+                        true
+
+                    fileButton.isEnabled =
+                        true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -276,12 +314,18 @@ class MainActivity : AppCompatActivity() {
 
             } catch (e: Exception) {
 
-                withContext(Dispatchers.Main) {
+                withContext(
+                    Dispatchers.Main
+                ) {
 
-                    progress.visibility = View.GONE
+                    progress.visibility =
+                        View.GONE
 
-                    loadUrlButton.isEnabled = true
-                    fileButton.isEnabled = true
+                    loadUrlButton.isEnabled =
+                        true
+
+                    fileButton.isEnabled =
+                        true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -387,6 +431,11 @@ class MainActivity : AppCompatActivity() {
                             R.id.channelCategory
                         )
 
+                    val logo =
+                        view.findViewById<ImageView>(
+                            R.id.channelLogo
+                        )
+
                     name.text =
                         channel?.name
                             ?: "Unknown Channel"
@@ -395,11 +444,79 @@ class MainActivity : AppCompatActivity() {
                         channel?.category
                             ?: "TV"
 
+                    logo.setImageResource(
+                        android.R.drawable.ic_media_play
+                    )
+
+                    if (
+                        channel != null &&
+                        channel.logo.isNotBlank()
+                    ) {
+
+                        loadLogo(
+                            channel.logo,
+                            logo
+                        )
+                    }
+
                     return view
                 }
             }
 
-        gridView.adapter = adapter
+        gridView.adapter =
+            adapter
+    }
+
+    private fun loadLogo(
+        logoUrl: String,
+        imageView: ImageView
+    ) {
+
+        CoroutineScope(
+            Dispatchers.IO
+        ).launch {
+
+            try {
+
+                val connection =
+                    URL(logoUrl)
+                        .openConnection()
+                        as HttpURLConnection
+
+                connection.connectTimeout =
+                    5000
+
+                connection.readTimeout =
+                    5000
+
+                connection.doInput =
+                    true
+
+                connection.connect()
+
+                val bitmap =
+                    BitmapFactory.decodeStream(
+                        connection.inputStream
+                    )
+
+                connection.disconnect()
+
+                if (bitmap != null) {
+
+                    withContext(
+                        Dispatchers.Main
+                    ) {
+
+                        imageView.setImageBitmap(
+                            bitmap
+                        )
+                    }
+                }
+
+            } catch (_: Exception) {
+                // Logo မရရင် default icon ကိုပဲပြ
+            }
+        }
     }
 
     private fun parseM3U(
@@ -424,7 +541,9 @@ class MainActivity : AppCompatActivity() {
 
         for (line in lines) {
 
-            if (line.startsWith("#EXTINF")) {
+            if (
+                line.startsWith("#EXTINF")
+            ) {
 
                 channelName =
                     line.substringAfter(
