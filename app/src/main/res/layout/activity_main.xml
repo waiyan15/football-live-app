@@ -13,7 +13,7 @@
         android:text="⚽ Football Live"
         android:textSize="26sp"
         android:textStyle="bold"
-        android:layout_marginBottom="15dp"/>
+        android:layout_marginBottom="15dp" />
 
     <EditText
         android:id="@+id/urlInput"
@@ -21,14 +21,14 @@
         android:layout_height="wrap_content"
         android:hint="M3U URL ထည့်ပါ"
         android:inputType="textUri"
-        android:singleLine="true"/>
+        android:singleLine="true" />
 
     <Button
         android:id="@+id/loadButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="LOAD M3U"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp" />
 
     <ProgressBar
         android:id="@+id/progress"
@@ -36,13 +36,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp" />
 
     <ListView
         android:id="@+id/channelList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:dividerHeight="1dp"/>
+        android:dividerHeight="1dp" />
 
 </LinearLayout>
