@@ -1,6 +1,7 @@
 package com.footballlive.app
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -15,33 +16,46 @@ class PlayerActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_player)
 
-        val playerView =
-            findViewById<PlayerView>(R.id.playerView)
+        val playerView = findViewById<PlayerView>(R.id.playerView)
 
-        val streamUrl =
-            intent.getStringExtra("url")
+        val streamUrl = intent.getStringExtra("url")
 
         if (streamUrl.isNullOrBlank()) {
+            Toast.makeText(
+                this,
+                "Stream URL မရှိပါ",
+                Toast.LENGTH_LONG
+            ).show()
             finish()
             return
         }
 
-        player = ExoPlayer.Builder(this).build()
+        try {
+            player = ExoPlayer.Builder(this).build()
 
-        playerView.player = player
+            playerView.player = player
 
-        val mediaItem =
-            MediaItem.fromUri(streamUrl)
+            val mediaItem = MediaItem.fromUri(streamUrl)
 
-        player?.setMediaItem(mediaItem)
-        player?.prepare()
-        player?.play()
+            player?.setMediaItem(mediaItem)
+            player?.prepare()
+            player?.playWhenReady = true
+
+        } catch (e: Exception) {
+
+            Toast.makeText(
+                this,
+                "Player ဖွင့်မရပါ",
+                Toast.LENGTH_LONG
+            ).show()
+
+            finish()
+        }
     }
 
-    override fun onStop() {
-        super.onStop()
-
+    override fun onDestroy() {
         player?.release()
         player = null
+        super.onDestroy()
     }
 }
