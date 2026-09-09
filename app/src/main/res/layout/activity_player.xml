@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
+    <!-- VIDEO PLAYER -->
     <androidx.media3.ui.PlayerView
         android:id="@+id/playerView"
         android:layout_width="match_parent"
@@ -16,19 +17,20 @@
         app:show_timeout="3000"
         app:resize_mode="fit" />
 
+    <!-- TOP BAR -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="68dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="8dp"
-        android:paddingEnd="16dp"
-        android:background="#99000000">
+        android:paddingStart="6dp"
+        android:paddingEnd="14dp"
+        android:background="#AA000000">
 
         <ImageButton
             android:id="@+id/playerBackButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:background="@android:color/transparent"
             android:src="@android:drawable/ic_menu_revert"
             android:tint="#FFFFFF"
@@ -48,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:text="Football Live"
                 android:textColor="#FFFFFF"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:maxLines="1"
                 android:ellipsize="end" />
@@ -58,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="● LIVE"
-                android:textColor="#FFFFFF"
+                android:textColor="#FF5252"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:layout_marginTop="2dp" />
@@ -67,12 +69,14 @@
 
     </LinearLayout>
 
+    <!-- LOADING -->
     <ProgressBar
         android:id="@+id/playerProgress"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
         android:layout_gravity="center" />
 
+    <!-- ERROR -->
     <TextView
         android:id="@+id/playerError"
         android:layout_width="wrap_content"
