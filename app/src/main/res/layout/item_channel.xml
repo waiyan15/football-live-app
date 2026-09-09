@@ -4,11 +4,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="175dp"
+    android:layout_height="180dp"
     android:layout_margin="4dp"
     app:cardBackgroundColor="#151B22"
     app:cardCornerRadius="16dp"
-    app:cardElevation="5dp"
+    app:cardElevation="4dp"
     app:strokeColor="#26313D"
     app:strokeWidth="1dp">
 
@@ -16,6 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- CARD CONTENT -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -25,8 +26,8 @@
 
             <ImageView
                 android:id="@+id/channelLogo"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
                 android:src="@android:drawable/ic_media_play"
                 android:scaleType="fitCenter"
                 android:background="#202A35"
@@ -56,13 +57,14 @@
 
         </LinearLayout>
 
+        <!-- LIVE -->
         <TextView
             android:id="@+id/liveBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="● LIVE"
             android:textColor="#FFFFFF"
-            android:textSize="10sp"
+            android:textSize="9sp"
             android:textStyle="bold"
             android:paddingStart="7dp"
             android:paddingEnd="7dp"
@@ -72,17 +74,31 @@
             android:layout_margin="8dp"
             android:background="#D32F2F" />
 
+        <!-- FAVORITE -->
         <TextView
             android:id="@+id/favoriteButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:text="♡"
             android:textColor="#FFFFFF"
-            android:textSize="25sp"
+            android:textSize="27sp"
             android:gravity="center"
             android:layout_gravity="top|end"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true"
+            android:background="@android:color/transparent" />
+
+        <!-- PLAY ICON -->
+        <TextView
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:text="▶"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="8dp"
+            android:background="#26313D" />
 
     </FrameLayout>
 
