@@ -5,55 +5,92 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#0B0F14"
-    android:padding="16dp">
+    android:background="#080C12">
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:text="⚽ Football Live"
         android:textColor="#FFFFFF"
-        android:textSize="28sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="20dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Playlist"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
+        android:gravity="center_vertical"
+        android:paddingStart="18dp" />
 
     <EditText
         android:id="@+id/urlInput"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
         android:hint="M3U / M3U8 URL"
         android:textColor="#FFFFFF"
-        android:textColorHint="#8A949E"
+        android:textColorHint="#7F8A96"
         android:inputType="textUri"
         android:singleLine="true"
-        android:padding="14dp"
-        android:background="#1A2129" />
+        android:padding="12dp"
+        android:background="#151B22" />
 
-    <Button
-        android:id="@+id/loadButton"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:text="🔗 LOAD URL"
-        android:textSize="15sp"
-        android:layout_marginTop="10dp" />
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp">
 
-    <Button
-        android:id="@+id/fileButton"
+        <Button
+            android:id="@+id/loadButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="LOAD URL" />
+
+        <Button
+            android:id="@+id/fileButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="FILE"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/searchInput"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:text="📁 SELECT M3U / M3U8 FILE"
-        android:textSize="15sp"
-        android:layout_marginTop="8dp" />
+        android:layout_height="48dp"
+        android:layout_margin="14dp"
+        android:hint="🔎 Search channels..."
+        android:textColor="#FFFFFF"
+        android:textColorHint="#7F8A96"
+        android:singleLine="true"
+        android:padding="12dp"
+        android:background="#151B22" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_marginEnd="10dp" />
+
+        <Spinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progress"
@@ -61,17 +98,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        android:layout_margin="12dp" />
+        android:layout_margin="8dp" />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TV Channels"
+        android:layout_height="40dp"
+        android:text="📺 TV Channels"
         android:textColor="#FFFFFF"
-        android:textSize="19sp"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="8dp" />
+        android:gravity="center_vertical"
+        android:paddingStart="14dp" />
 
     <GridView
         android:id="@+id/channelGrid"
@@ -79,9 +116,54 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:numColumns="2"
-        android:horizontalSpacing="10dp"
-        android:verticalSpacing="10dp"
-        android:stretchMode="columnWidth"
-        android:gravity="center" />
+        android:horizontalSpacing="6dp"
+        android:verticalSpacing="6dp"
+        android:padding="8dp"
+        android:stretchMode="columnWidth" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:background="#11161D"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="🏠\nHome"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="📺\nChannels"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="⚽\nScores"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="❤️\nFavorites"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:textSize="12sp" />
+
+    </LinearLayout>
 
 </LinearLayout>
