@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
         progress = findViewById(R.id.progress)
 
         loadButton.setOnClickListener {
-
             val url = urlInput.text.toString().trim()
 
             if (url.isEmpty()) {
@@ -41,18 +40,19 @@ class MainActivity : AppCompatActivity() {
                     "M3U URL ထည့်ပါ",
                     Toast.LENGTH_SHORT
                 ).show()
-                return@setOnClickListener
+            } else {
+                loadM3U(url)
             }
-
-            loadM3U(url)
         }
 
         listView.setOnItemClickListener { _, _, position, _ ->
 
             val channel = channels[position]
 
-            val intent =
-                Intent(this, PlayerActivity::class.java)
+            val intent = Intent(
+                this,
+                PlayerActivity::class.java
+            )
 
             intent.putExtra("name", channel.name)
             intent.putExtra("url", channel.url)
@@ -69,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
-
                 val text = URL(m3uUrl)
                     .openStream()
                     .bufferedReader()
@@ -82,8 +81,9 @@ class MainActivity : AppCompatActivity() {
                     channels.clear()
                     channels.addAll(result)
 
-                    val names =
-                        channels.map { it.name }
+                    val names = channels.map {
+                        it.name
+                    }
 
                     val adapter = ArrayAdapter(
                         this@MainActivity,
@@ -93,9 +93,7 @@ class MainActivity : AppCompatActivity() {
 
                     listView.adapter = adapter
 
-                    progress.visibility =
-                        ProgressBar.GONE
-
+                    progress.visibility = ProgressBar.GONE
                     loadButton.isEnabled = true
 
                     Toast.makeText(
@@ -109,9 +107,7 @@ class MainActivity : AppCompatActivity() {
 
                 withContext(Dispatchers.Main) {
 
-                    progress.visibility =
-                        ProgressBar.GONE
-
+                    progress.visibility = ProgressBar.GONE
                     loadButton.isEnabled = true
 
                     Toast.makeText(
@@ -128,8 +124,7 @@ class MainActivity : AppCompatActivity() {
         text: String
     ): List<Channel> {
 
-        val result =
-            ArrayList<Channel>()
+        val result = ArrayList<Channel>()
 
         val lines = text
             .lines()
@@ -142,11 +137,12 @@ class MainActivity : AppCompatActivity() {
 
             if (line.startsWith("#EXTINF")) {
 
-                channelName =
-                    line.substringAfter(
+                channelName = line
+                    .substringAfter(
                         ",",
                         "Unknown Channel"
-                    ).trim()
+                    )
+                    .trim()
 
             } else if (
                 !line.startsWith("#") &&
