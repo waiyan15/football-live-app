@@ -362,8 +362,9 @@ class MainActivity : AppCompatActivity() {
             card.text =
                 "▶  ${channel.name}\n     ${channel.category}"
 
-            card.textColor =
-                android.graphics.Color.WHITE
+            card.setTextColor(
+    android.graphics.Color.WHITE
+)
 
             card.textSize = 16f
 
