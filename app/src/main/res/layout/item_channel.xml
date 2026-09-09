@@ -4,10 +4,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="155dp"
     android:layout_margin="5dp"
-    app:cardCornerRadius="14dp"
-    app:cardElevation="4dp"
+    app:cardBackgroundColor="#151B22"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="5dp"
+    app:strokeColor="#26313D"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -19,23 +21,25 @@
 
         <TextView
             android:id="@+id/channelIcon"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:text="📺"
-            android:textSize="36sp"
-            android:gravity="center" />
+            android:textSize="38sp"
+            android:gravity="center"
+            android:background="#202A35" />
 
         <TextView
             android:id="@+id/channelName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Channel Name"
+            android:textColor="#FFFFFF"
             android:textSize="15sp"
             android:textStyle="bold"
             android:gravity="center"
             android:maxLines="2"
             android:ellipsize="end"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="10dp" />
 
     </LinearLayout>
 
