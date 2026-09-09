@@ -18,7 +18,9 @@ data class Channel(
 )
 
 class ChannelViewModel : ViewModel() {
+
     val channels = ArrayList<Channel>()
+
     var savedUrl: String = ""
 }
 
@@ -47,26 +49,47 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        viewModel = ViewModelProvider(this)[ChannelViewModel::class.java]
+        viewModel =
+            ViewModelProvider(this)[ChannelViewModel::class.java]
 
-        urlInput = findViewById(R.id.urlInput)
-        loadUrlButton = findViewById(R.id.loadButton)
-        fileButton = findViewById(R.id.fileButton)
-        gridView = findViewById(R.id.channelGrid)
-        progress = findViewById(R.id.progress)
+        urlInput =
+            findViewById(R.id.urlInput)
+
+        loadUrlButton =
+            findViewById(R.id.loadButton)
+
+        fileButton =
+            findViewById(R.id.fileButton)
+
+        gridView =
+            findViewById(R.id.channelGrid)
+
+        progress =
+            findViewById(R.id.progress)
 
         // အရင် playlist ရှိရင် ပြန်ပြ
         if (viewModel.channels.isNotEmpty()) {
-            showChannels(viewModel.channels)
+
+            showChannels(
+                viewModel.channels
+            )
         }
 
+        // အရင် URL ရှိရင် ပြန်ထည့်
         if (viewModel.savedUrl.isNotEmpty()) {
-            urlInput.setText(viewModel.savedUrl)
+
+            urlInput.setText(
+                viewModel.savedUrl
+            )
         }
 
+        // LOAD URL
         loadUrlButton.setOnClickListener {
 
-            val url = urlInput.text.toString().trim()
+            val url =
+                urlInput.text
+                    .toString()
+                    .trim()
 
             if (url.isEmpty()) {
 
@@ -79,20 +102,32 @@ class MainActivity : AppCompatActivity() {
             } else {
 
                 viewModel.savedUrl = url
+
                 loadM3U(url)
             }
         }
 
+        // SELECT FILE
         fileButton.setOnClickListener {
 
             filePicker.launch("*/*")
         }
 
-        gridView.setOnItemClickListener { _, _, position, _ ->
+        // CHANNEL CLICK
+        gridView.setOnItemClickListener {
 
-            if (position < viewModel.channels.size) {
+                _,
+                _,
+                position,
+                _ ->
 
-                val channel = viewModel.channels[position]
+            if (
+                position >= 0 &&
+                position < viewModel.channels.size
+            ) {
+
+                val channel =
+                    viewModel.channels[position]
 
                 val intent =
                     Intent(
@@ -115,14 +150,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadM3U(m3uUrl: String) {
+    // =========================
+    // LOAD M3U URL
+    // =========================
 
-        progress.visibility = View.VISIBLE
+    private fun loadM3U(
+        m3uUrl: String
+    ) {
 
-        loadUrlButton.isEnabled = false
-        fileButton.isEnabled = false
+        progress.visibility =
+            View.VISIBLE
 
-        CoroutineScope(Dispatchers.IO).launch {
+        loadUrlButton.isEnabled =
+            false
+
+        fileButton.isEnabled =
+            false
+
+        CoroutineScope(
+            Dispatchers.IO
+        ).launch {
 
             try {
 
@@ -130,21 +177,35 @@ class MainActivity : AppCompatActivity() {
                     URL(m3uUrl)
                         .openStream()
                         .bufferedReader()
-                        .use { it.readText() }
+                        .use {
+                            it.readText()
+                        }
 
-                val result = parseM3U(text)
+                val result =
+                    parseM3U(text)
 
-                withContext(Dispatchers.Main) {
+                withContext(
+                    Dispatchers.Main
+                ) {
 
                     viewModel.channels.clear()
-                    viewModel.channels.addAll(result)
 
-                    showChannels(viewModel.channels)
+                    viewModel.channels.addAll(
+                        result
+                    )
 
-                    progress.visibility = View.GONE
+                    showChannels(
+                        viewModel.channels
+                    )
 
-                    loadUrlButton.isEnabled = true
-                    fileButton.isEnabled = true
+                    progress.visibility =
+                        View.GONE
+
+                    loadUrlButton.isEnabled =
+                        true
+
+                    fileButton.isEnabled =
+                        true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -155,12 +216,18 @@ class MainActivity : AppCompatActivity() {
 
             } catch (e: Exception) {
 
-                withContext(Dispatchers.Main) {
+                withContext(
+                    Dispatchers.Main
+                ) {
 
-                    progress.visibility = View.GONE
+                    progress.visibility =
+                        View.GONE
 
-                    loadUrlButton.isEnabled = true
-                    fileButton.isEnabled = true
+                    loadUrlButton.isEnabled =
+                        true
+
+                    fileButton.isEnabled =
+                        true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -172,14 +239,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadM3UFile(uri: Uri) {
+    // =========================
+    // LOAD M3U FILE
+    // =========================
 
-        progress.visibility = View.VISIBLE
+    private fun loadM3UFile(
+        uri: Uri
+    ) {
 
-        loadUrlButton.isEnabled = false
-        fileButton.isEnabled = false
+        progress.visibility =
+            View.VISIBLE
 
-        CoroutineScope(Dispatchers.IO).launch {
+        loadUrlButton.isEnabled =
+            false
+
+        fileButton.isEnabled =
+            false
+
+        CoroutineScope(
+            Dispatchers.IO
+        ).launch {
 
             try {
 
@@ -187,24 +266,38 @@ class MainActivity : AppCompatActivity() {
                     contentResolver
                         .openInputStream(uri)
                         ?.bufferedReader()
-                        ?.use { it.readText() }
+                        ?.use {
+                            it.readText()
+                        }
                         ?: throw Exception(
                             "File မဖတ်နိုင်ပါ"
                         )
 
-                val result = parseM3U(text)
+                val result =
+                    parseM3U(text)
 
-                withContext(Dispatchers.Main) {
+                withContext(
+                    Dispatchers.Main
+                ) {
 
                     viewModel.channels.clear()
-                    viewModel.channels.addAll(result)
 
-                    showChannels(viewModel.channels)
+                    viewModel.channels.addAll(
+                        result
+                    )
 
-                    progress.visibility = View.GONE
+                    showChannels(
+                        viewModel.channels
+                    )
 
-                    loadUrlButton.isEnabled = true
-                    fileButton.isEnabled = true
+                    progress.visibility =
+                        View.GONE
+
+                    loadUrlButton.isEnabled =
+                        true
+
+                    fileButton.isEnabled =
+                        true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -215,12 +308,18 @@ class MainActivity : AppCompatActivity() {
 
             } catch (e: Exception) {
 
-                withContext(Dispatchers.Main) {
+                withContext(
+                    Dispatchers.Main
+                ) {
 
-                    progress.visibility = View.GONE
+                    progress.visibility =
+                        View.GONE
 
-                    loadUrlButton.isEnabled = true
-                    fileButton.isEnabled = true
+                    loadUrlButton.isEnabled =
+                        true
+
+                    fileButton.isEnabled =
+                        true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -232,24 +331,58 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // =========================
+    // SHOW CHANNEL CARDS
+    // =========================
+
     private fun showChannels(
         channels: List<Channel>
     ) {
 
-        val names =
-            channels.map {
-                it.name
+        val adapter =
+            object : ArrayAdapter<Channel>(
+                this,
+                R.layout.item_channel,
+                channels
+            ) {
+
+                override fun getView(
+                    position: Int,
+                    convertView: View?,
+                    parent: android.view.ViewGroup
+                ): View {
+
+                    val view =
+                        convertView
+                            ?: layoutInflater.inflate(
+                                R.layout.item_channel,
+                                parent,
+                                false
+                            )
+
+                    val channel =
+                        getItem(position)
+
+                    val name =
+                        view.findViewById<TextView>(
+                            R.id.channelName
+                        )
+
+                    name.text =
+                        channel?.name
+                            ?: "Unknown Channel"
+
+                    return view
+                }
             }
 
-        val adapter =
-            ArrayAdapter(
-                this,
-                android.R.layout.simple_list_item_1,
-                names
-            )
-
-        gridView.adapter = adapter
+        gridView.adapter =
+            adapter
     }
+
+    // =========================
+    // PARSE M3U
+    // =========================
 
     private fun parseM3U(
         text: String
@@ -260,37 +393,7 @@ class MainActivity : AppCompatActivity() {
 
         val lines =
             text.lines()
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-
-        var channelName = ""
-
-        for (line in lines) {
-
-            if (line.startsWith("#EXTINF")) {
-
-                channelName =
-                    line.substringAfter(
-                        ",",
-                        "Unknown Channel"
-                    ).trim()
-
-            } else if (
-                !line.startsWith("#") &&
-                channelName.isNotEmpty()
-            ) {
-
-                result.add(
-                    Channel(
-                        channelName,
-                        line
-                    )
-                )
-
-                channelName = ""
-            }
-        }
-
-        return result
-    }
-}
+                .map {
+                    it.trim()
+                }
+                .filter
