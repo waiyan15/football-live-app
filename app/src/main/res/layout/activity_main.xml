@@ -123,46 +123,58 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="64dp"
         android:orientation="horizontal"
         android:background="#11161D"
         android:gravity="center">
 
         <TextView
+            android:id="@+id/navHome"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="🏠\nHome"
+            android:text="🏠&#10;Home"
             android:textColor="#FFFFFF"
             android:gravity="center"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:clickable="true"
+            android:focusable="true" />
 
         <TextView
+            android:id="@+id/navChannels"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="📺\nChannels"
+            android:text="📺&#10;Channels"
             android:textColor="#FFFFFF"
             android:gravity="center"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:clickable="true"
+            android:focusable="true" />
 
         <TextView
+            android:id="@+id/navScores"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="⚽\nScores"
+            android:text="⚽&#10;Scores"
             android:textColor="#FFFFFF"
             android:gravity="center"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:clickable="true"
+            android:focusable="true" />
 
         <TextView
+            android:id="@+id/navFavorites"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="❤️\nFavorites"
+            android:text="♥&#10;Favorites"
             android:textColor="#FFFFFF"
             android:gravity="center"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:clickable="true"
+            android:focusable="true" />
 
     </LinearLayout>
 
