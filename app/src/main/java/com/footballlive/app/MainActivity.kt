@@ -28,11 +28,8 @@ data class Channel(
 )
 
 class ChannelViewModel : ViewModel() {
-
     val channels = ArrayList<Channel>()
-
     var savedUrl: String = ""
-
     var currentPage: String = "channels"
 }
 
@@ -54,7 +51,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navChannels: TextView
     private lateinit var navScores: TextView
     private lateinit var navFavorites: TextView
-
     private lateinit var pageTitle: TextView
 
     private lateinit var viewModel: ChannelViewModel
@@ -70,77 +66,42 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(
             ActivityResultContracts.GetContent()
         ) { uri: Uri? ->
-
             if (uri != null) {
                 loadM3UFile(uri)
             }
         }
 
-    override fun onCreate(
-        savedInstanceState: Bundle?
-    ) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(
-            R.layout.activity_main
-        )
+        setContentView(R.layout.activity_main)
 
         viewModel =
-            ViewModelProvider(this)[
-                ChannelViewModel::class.java
-            ]
+            ViewModelProvider(this)[ChannelViewModel::class.java]
 
-        urlInput =
-            findViewById(R.id.urlInput)
+        urlInput = findViewById(R.id.urlInput)
+        loadUrlButton = findViewById(R.id.loadButton)
+        fileButton = findViewById(R.id.fileButton)
+        gridView = findViewById(R.id.channelGrid)
+        progress = findViewById(R.id.progress)
+        searchInput = findViewById(R.id.searchInput)
+        categorySpinner = findViewById(R.id.categorySpinner)
 
-        loadUrlButton =
-            findViewById(R.id.loadButton)
+        homeLayout = findViewById(R.id.homeLayout)
+        scoresLayout = findViewById(R.id.scoresLayout)
+        favoritesLayout = findViewById(R.id.favoritesLayout)
 
-        fileButton =
-            findViewById(R.id.fileButton)
+        navHome = findViewById(R.id.navHome)
+        navChannels = findViewById(R.id.navChannels)
+        navScores = findViewById(R.id.navScores)
+        navFavorites = findViewById(R.id.navFavorites)
 
-        gridView =
-            findViewById(R.id.channelGrid)
-
-        progress =
-            findViewById(R.id.progress)
-
-        searchInput =
-            findViewById(R.id.searchInput)
-
-        categorySpinner =
-            findViewById(R.id.categorySpinner)
-
-        homeLayout =
-            findViewById(R.id.homeLayout)
-
-        scoresLayout =
-            findViewById(R.id.scoresLayout)
-
-        favoritesLayout =
-            findViewById(R.id.favoritesLayout)
-
-        navHome =
-            findViewById(R.id.navHome)
-
-        navChannels =
-            findViewById(R.id.navChannels)
-
-        navScores =
-            findViewById(R.id.navScores)
-
-        navFavorites =
-            findViewById(R.id.navFavorites)
-
-        pageTitle =
-            findViewById(R.id.pageTitle)
+        pageTitle = findViewById(R.id.pageTitle)
 
         loadUrlButton.setOnClickListener {
 
             val url =
-                urlInput.text
-                    .toString()
-                    .trim()
+                urlInput.text.toString().trim()
 
             if (url.isEmpty()) {
 
@@ -150,33 +111,40 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
 
-            } else {
-
-                viewModel.savedUrl =
-                    url
-
-                loadM3U(url)
+                return@setOnClickListener
             }
+
+            viewModel.savedUrl = url
+
+            loadM3U(url)
         }
 
         fileButton.setOnClickListener {
-
             filePicker.launch("*/*")
         }
 
         gridView.setOnItemClickListener {
-
                 _,
                 _,
                 position,
                 _ ->
 
             val adapter =
-                gridView.adapter
-                    as? ArrayAdapter<Channel>
+                gridView.adapter as? ArrayAdapter<Channel>
+
+            if (adapter == null) {
+                return@setOnItemClickListener
+            }
+
+            if (
+                position < 0 ||
+                position >= adapter.count
+            ) {
+                return@setOnItemClickListener
+            }
 
             val channel =
-                adapter?.getItem(position)
+                adapter.getItem(position)
 
             if (channel != null) {
                 openPlayer(channel)
@@ -260,101 +228,74 @@ class MainActivity : AppCompatActivity() {
         showChannelsPage()
     }
 
-    private fun openPlayer(
-        channel: Channel
-    ) {
+    private fun openPlayer(channel: Channel) {
 
-        val intent =
-            Intent(
-                this,
-                PlayerActivity::class.java
+        try {
+
+            val intent =
+                Intent(
+                    this,
+                    PlayerActivity::class.java
+                )
+
+            intent.putExtra(
+                "name",
+                channel.name
             )
 
-        intent.putExtra(
-            "name",
-            channel.name
-        )
+            intent.putExtra(
+                "url",
+                channel.url
+            )
 
-        intent.putExtra(
-            "url",
-            channel.url
-        )
+            startActivity(intent)
 
-        startActivity(intent)
+        } catch (e: Exception) {
+
+            Toast.makeText(
+                this,
+                "Player ဖွင့်မရပါ",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     private fun showHome() {
 
-        viewModel.currentPage =
-            "home"
+        viewModel.currentPage = "home"
 
-        homeLayout.visibility =
-            View.VISIBLE
+        homeLayout.visibility = View.VISIBLE
+        scoresLayout.visibility = View.GONE
+        favoritesLayout.visibility = View.GONE
+        gridView.visibility = View.GONE
 
-        scoresLayout.visibility =
-            View.GONE
+        urlInput.visibility = View.GONE
+        loadUrlButton.visibility = View.GONE
+        fileButton.visibility = View.GONE
+        searchInput.visibility = View.GONE
+        categorySpinner.visibility = View.GONE
 
-        favoritesLayout.visibility =
-            View.GONE
-
-        gridView.visibility =
-            View.GONE
-
-        urlInput.visibility =
-            View.GONE
-
-        loadUrlButton.visibility =
-            View.GONE
-
-        fileButton.visibility =
-            View.GONE
-
-        searchInput.visibility =
-            View.GONE
-
-        categorySpinner.visibility =
-            View.GONE
-
-        pageTitle.text =
-            "🏠 Home"
+        pageTitle.text = "🏠 Home"
 
         updateNav(navHome)
     }
 
     private fun showChannelsPage() {
 
-        viewModel.currentPage =
-            "channels"
+        viewModel.currentPage = "channels"
 
-        homeLayout.visibility =
-            View.GONE
+        homeLayout.visibility = View.GONE
+        scoresLayout.visibility = View.GONE
+        favoritesLayout.visibility = View.GONE
+        gridView.visibility = View.VISIBLE
 
-        scoresLayout.visibility =
-            View.GONE
+        urlInput.visibility = View.VISIBLE
+        loadUrlButton.visibility = View.VISIBLE
+        fileButton.visibility = View.VISIBLE
+        searchInput.visibility = View.VISIBLE
+        categorySpinner.visibility = View.VISIBLE
 
-        favoritesLayout.visibility =
-            View.GONE
-
-        gridView.visibility =
-            View.VISIBLE
-
-        urlInput.visibility =
-            View.VISIBLE
-
-        loadUrlButton.visibility =
-            View.VISIBLE
-
-        fileButton.visibility =
-            View.VISIBLE
-
-        searchInput.visibility =
-            View.VISIBLE
-
-        categorySpinner.visibility =
-            View.VISIBLE
-
-        pageTitle.text =
-            "📺 TV Channels"
+        pageTitle.text = "📺 TV Channels"
 
         filterChannels()
 
@@ -363,85 +304,47 @@ class MainActivity : AppCompatActivity() {
 
     private fun showScores() {
 
-        viewModel.currentPage =
-            "scores"
+        viewModel.currentPage = "scores"
 
-        homeLayout.visibility =
-            View.GONE
+        homeLayout.visibility = View.GONE
+        scoresLayout.visibility = View.VISIBLE
+        favoritesLayout.visibility = View.GONE
+        gridView.visibility = View.GONE
 
-        scoresLayout.visibility =
-            View.VISIBLE
+        urlInput.visibility = View.GONE
+        loadUrlButton.visibility = View.GONE
+        fileButton.visibility = View.GONE
+        searchInput.visibility = View.GONE
+        categorySpinner.visibility = View.GONE
 
-        favoritesLayout.visibility =
-            View.GONE
-
-        gridView.visibility =
-            View.GONE
-
-        urlInput.visibility =
-            View.GONE
-
-        loadUrlButton.visibility =
-            View.GONE
-
-        fileButton.visibility =
-            View.GONE
-
-        searchInput.visibility =
-            View.GONE
-
-        categorySpinner.visibility =
-            View.GONE
-
-        pageTitle.text =
-            "⚽ Live Scores"
+        pageTitle.text = "⚽ Live Scores"
 
         updateNav(navScores)
     }
 
     private fun showFavorites() {
 
-        viewModel.currentPage =
-            "favorites"
+        viewModel.currentPage = "favorites"
 
-        homeLayout.visibility =
-            View.GONE
+        homeLayout.visibility = View.GONE
+        scoresLayout.visibility = View.GONE
+        favoritesLayout.visibility = View.VISIBLE
+        gridView.visibility = View.GONE
 
-        scoresLayout.visibility =
-            View.GONE
+        urlInput.visibility = View.GONE
+        loadUrlButton.visibility = View.GONE
+        fileButton.visibility = View.GONE
+        searchInput.visibility = View.GONE
+        categorySpinner.visibility = View.GONE
 
-        favoritesLayout.visibility =
-            View.VISIBLE
-
-        gridView.visibility =
-            View.GONE
-
-        urlInput.visibility =
-            View.GONE
-
-        loadUrlButton.visibility =
-            View.GONE
-
-        fileButton.visibility =
-            View.GONE
-
-        searchInput.visibility =
-            View.GONE
-
-        categorySpinner.visibility =
-            View.GONE
-
-        pageTitle.text =
-            "♥ Favorites"
+        pageTitle.text = "♥ Favorites"
 
         showFavoriteCards()
 
         updateNav(navFavorites)
     }
 
-    private fun updateNav(
-        selected: TextView
-    ) {
+    private fun updateNav(selected: TextView) {
 
         val items =
             listOf(
@@ -467,8 +370,8 @@ class MainActivity : AppCompatActivity() {
         favoritesLayout.removeAllViews()
 
         val favorites =
-            viewModel.channels.filter { channel ->
-                isFavorite(channel)
+            viewModel.channels.filter {
+                isFavorite(it)
             }
 
         if (favorites.isEmpty()) {
@@ -479,15 +382,11 @@ class MainActivity : AppCompatActivity() {
             empty.text =
                 "♥\n\nNo Favorite Channels\n\nChannel တစ်ခုကို ♥ နှိပ်ပြီး Favorites ထဲထည့်ပါ"
 
-            empty.setTextColor(
-                Color.WHITE
-            )
+            empty.setTextColor(Color.WHITE)
 
-            empty.textSize =
-                16f
+            empty.textSize = 16f
 
-            empty.gravity =
-                Gravity.CENTER
+            empty.gravity = Gravity.CENTER
 
             favoritesLayout.addView(
                 empty,
@@ -508,12 +407,9 @@ class MainActivity : AppCompatActivity() {
             card.text =
                 "▶  ${channel.name}\n     ${channel.category}"
 
-            card.setTextColor(
-                Color.WHITE
-            )
+            card.setTextColor(Color.WHITE)
 
-            card.textSize =
-                16f
+            card.textSize = 16f
 
             card.setPadding(
                 20,
@@ -577,18 +473,29 @@ class MainActivity : AppCompatActivity() {
             .apply()
     }
 
+    private fun setLoading(
+        loading: Boolean
+    ) {
+
+        progress.visibility =
+            if (loading) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+
+        loadUrlButton.isEnabled =
+            !loading
+
+        fileButton.isEnabled =
+            !loading
+    }
+
     private fun loadM3U(
         url: String
     ) {
 
-        progress.visibility =
-            View.VISIBLE
-
-        loadUrlButton.isEnabled =
-            false
-
-        fileButton.isEnabled =
-            false
+        setLoading(true)
 
         CoroutineScope(
             Dispatchers.IO
@@ -601,16 +508,22 @@ class MainActivity : AppCompatActivity() {
                         .openConnection()
                         as HttpURLConnection
 
-                connection.connectTimeout =
-                    15000
-
-                connection.readTimeout =
-                    20000
-
-                connection.requestMethod =
-                    "GET"
+                connection.connectTimeout = 15000
+                connection.readTimeout = 30000
+                connection.requestMethod = "GET"
 
                 connection.connect()
+
+                val responseCode =
+                    connection.responseCode
+
+                if (
+                    responseCode !in 200..299
+                ) {
+                    throw Exception(
+                        "HTTP $responseCode"
+                    )
+                }
 
                 val text =
                     connection.inputStream
@@ -636,16 +549,9 @@ class MainActivity : AppCompatActivity() {
 
                     updateCategories()
 
+                    setLoading(false)
+
                     showChannelsPage()
-
-                    progress.visibility =
-                        View.GONE
-
-                    loadUrlButton.isEnabled =
-                        true
-
-                    fileButton.isEnabled =
-                        true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -654,26 +560,17 @@ class MainActivity : AppCompatActivity() {
                     ).show()
                 }
 
-            } catch (
-                e: Exception
-            ) {
+            } catch (e: Exception) {
 
                 withContext(
                     Dispatchers.Main
                 ) {
 
-                    progress.visibility =
-                        View.GONE
-
-                    loadUrlButton.isEnabled =
-                        true
-
-                    fileButton.isEnabled =
-                        true
+                    setLoading(false)
 
                     Toast.makeText(
                         this@MainActivity,
-                        "M3U Load မအောင်မြင်ပါ",
+                        "M3U Load မအောင်မြင်ပါ\n${e.message ?: ""}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -685,14 +582,7 @@ class MainActivity : AppCompatActivity() {
         uri: Uri
     ) {
 
-        progress.visibility =
-            View.VISIBLE
-
-        loadUrlButton.isEnabled =
-            false
-
-        fileButton.isEnabled =
-            false
+        setLoading(true)
 
         CoroutineScope(
             Dispatchers.IO
@@ -726,16 +616,9 @@ class MainActivity : AppCompatActivity() {
 
                     updateCategories()
 
+                    setLoading(false)
+
                     showChannelsPage()
-
-                    progress.visibility =
-                        View.GONE
-
-                    loadUrlButton.isEnabled =
-                        true
-
-                    fileButton.isEnabled =
-                        true
 
                     Toast.makeText(
                         this@MainActivity,
@@ -744,26 +627,17 @@ class MainActivity : AppCompatActivity() {
                     ).show()
                 }
 
-            } catch (
-                e: Exception
-            ) {
+            } catch (e: Exception) {
 
                 withContext(
                     Dispatchers.Main
                 ) {
 
-                    progress.visibility =
-                        View.GONE
-
-                    loadUrlButton.isEnabled =
-                        true
-
-                    fileButton.isEnabled =
-                        true
+                    setLoading(false)
 
                     Toast.makeText(
                         this@MainActivity,
-                        "M3U File ဖတ်မရပါ",
+                        "M3U File ဖတ်မရပါ\n${e.message ?: ""}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -780,16 +654,15 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.channels.forEach { channel ->
 
+            val category =
+                channel.category.trim()
+
             if (
-                channel.category.isNotBlank() &&
-                !categories.contains(
-                    channel.category
-                )
+                category.isNotEmpty() &&
+                !categories.contains(category)
             ) {
 
-                categories.add(
-                    channel.category
-                )
+                categories.add(category)
             }
         }
 
@@ -803,6 +676,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterChannels() {
 
+        if (!::searchInput.isInitialized) {
+            return
+        }
+
         val search =
             searchInput.text
                 .toString()
@@ -810,9 +687,14 @@ class MainActivity : AppCompatActivity() {
                 .lowercase()
 
         val category =
-            categorySpinner.selectedItem
-                ?.toString()
-                ?: "All"
+            if (
+                categorySpinner.selectedItem != null
+            ) {
+                categorySpinner.selectedItem
+                    .toString()
+            } else {
+                "All"
+            }
 
         val filtered =
             viewModel.channels.filter { channel ->
@@ -830,20 +712,21 @@ class MainActivity : AppCompatActivity() {
                     categoryMatch
             }
 
-        showChannels(
-            filtered
-        )
+        showChannels(filtered)
     }
 
     private fun showChannels(
         channels: List<Channel>
     ) {
 
+        val safeChannels =
+            channels.toList()
+
         val adapter =
             object : ArrayAdapter<Channel>(
                 this,
                 R.layout.item_channel,
-                channels
+                safeChannels
             ) {
 
                 override fun getView(
@@ -853,12 +736,29 @@ class MainActivity : AppCompatActivity() {
                 ): View {
 
                     val view =
-                        convertView
-                            ?: layoutInflater.inflate(
-                                R.layout.item_channel,
-                                parent,
-                                false
-                            )
+                        try {
+
+                            convertView
+                                ?: layoutInflater.inflate(
+                                    R.layout.item_channel,
+                                    parent,
+                                    false
+                                )
+
+                        } catch (e: Exception) {
+
+                            TextView(this@MainActivity).apply {
+                                setTextColor(Color.WHITE)
+                                textSize = 14f
+                                gravity = Gravity.CENTER
+                                setPadding(
+                                    10,
+                                    10,
+                                    10,
+                                    10
+                                )
+                            }
+                        }
 
                     val channel =
                         getItem(position)
@@ -883,20 +783,30 @@ class MainActivity : AppCompatActivity() {
                             R.id.favoriteButton
                         )
 
-                    name.text =
-                        channel?.name
-                            ?: "Unknown Channel"
+                    if (name != null) {
 
-                    category.text =
-                        channel?.category
-                            ?: "TV"
+                        name.text =
+                            channel?.name
+                                ?: "Unknown Channel"
+                    }
 
-                    logo.setImageResource(
-                        android.R.drawable.ic_media_play
-                    )
+                    if (category != null) {
+
+                        category.text =
+                            channel?.category
+                                ?: "TV"
+                    }
+
+                    if (logo != null) {
+
+                        logo.setImageResource(
+                            android.R.drawable.ic_media_play
+                        )
+                    }
 
                     if (
                         channel != null &&
+                        logo != null &&
                         channel.logo.isNotBlank()
                     ) {
 
@@ -906,7 +816,10 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
 
-                    if (channel != null) {
+                    if (
+                        channel != null &&
+                        favoriteButton != null
+                    ) {
 
                         favoriteButton.text =
                             if (
@@ -933,16 +846,6 @@ class MainActivity : AppCompatActivity() {
                                 } else {
                                     "♡"
                                 }
-
-                            Toast.makeText(
-                                this@MainActivity,
-                                if (newState) {
-                                    "Favorites ထဲထည့်ပြီးပါပြီ"
-                                } else {
-                                    "Favorites ကနေ ဖယ်ပြီးပါပြီ"
-                                },
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
                     }
 
@@ -950,8 +853,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        gridView.adapter =
-            adapter
+        gridView.adapter = adapter
     }
 
     private fun loadLogo(
@@ -970,21 +872,17 @@ class MainActivity : AppCompatActivity() {
                         .openConnection()
                         as HttpURLConnection
 
-                connection.connectTimeout =
-                    5000
-
-                connection.readTimeout =
-                    5000
-
-                connection.doInput =
-                    true
+                connection.connectTimeout = 3000
+                connection.readTimeout = 3000
+                connection.doInput = true
 
                 connection.connect()
 
                 val bitmap =
-                    BitmapFactory.decodeStream(
-                        connection.inputStream
-                    )
+                    connection.inputStream
+                        .use {
+                            BitmapFactory.decodeStream(it)
+                        }
 
                 connection.disconnect()
 
@@ -994,9 +892,15 @@ class MainActivity : AppCompatActivity() {
                         Dispatchers.Main
                     ) {
 
-                        imageView.setImageBitmap(
-                            bitmap
-                        )
+                        if (
+                            !isFinishing &&
+                            !isDestroyed
+                        ) {
+
+                            imageView.setImageBitmap(
+                                bitmap
+                            )
+                        }
                     }
                 }
 
@@ -1028,7 +932,10 @@ class MainActivity : AppCompatActivity() {
         for (line in lines) {
 
             if (
-                line.startsWith("#EXTINF")
+                line.startsWith(
+                    "#EXTINF",
+                    ignoreCase = true
+                )
             ) {
 
                 channelName =
@@ -1045,7 +952,11 @@ class MainActivity : AppCompatActivity() {
                 category =
                     group
                         ?.groupValues
-                        ?.get(1)
+                        ?.getOrNull(1)
+                        ?.trim()
+                        ?.ifEmpty {
+                            "All"
+                        }
                         ?: "All"
 
                 val logoMatch =
@@ -1056,7 +967,8 @@ class MainActivity : AppCompatActivity() {
                 logo =
                     logoMatch
                         ?.groupValues
-                        ?.get(1)
+                        ?.getOrNull(1)
+                        ?.trim()
                         ?: ""
 
             } else if (
