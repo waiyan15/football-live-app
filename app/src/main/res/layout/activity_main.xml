@@ -5,30 +5,55 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#0B0F14"
     android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚽ Football Live"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="20dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⚽ Football Live"
-        android:textSize="26sp"
+        android:text="Playlist"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginBottom="15dp" />
+        android:layout_marginBottom="8dp" />
 
     <EditText
         android:id="@+id/urlInput"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="M3U URL ထည့်ပါ"
+        android:layout_height="55dp"
+        android:hint="M3U / M3U8 URL"
+        android:hintTextColor="#8A949E"
+        android:textColor="#FFFFFF"
         android:inputType="textUri"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:padding="14dp"
+        android:background="#1A2129" />
 
     <Button
         android:id="@+id/loadButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="LOAD M3U"
+        android:layout_height="52dp"
+        android:text="🔗 LOAD URL"
+        android:textSize="15sp"
         android:layout_marginTop="10dp" />
+
+    <Button
+        android:id="@+id/fileButton"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="📁 SELECT M3U / M3U8 FILE"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp" />
 
     <ProgressBar
         android:id="@+id/progress"
@@ -36,13 +61,24 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        android:layout_margin="10dp" />
+        android:layout_margin="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TV Channels"
+        android:textColor="#FFFFFF"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="8dp" />
 
     <ListView
         android:id="@+id/channelList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:divider="#252D36"
         android:dividerHeight="1dp" />
 
 </LinearLayout>
