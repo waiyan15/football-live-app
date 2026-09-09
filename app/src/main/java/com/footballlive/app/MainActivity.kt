@@ -14,7 +14,8 @@ import java.net.URL
 
 data class Channel(
     val name: String,
-    val url: String
+    val url: String,
+    val category: String = "All"
 )
 
 class ChannelViewModel : ViewModel() {
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fileButton: Button
     private lateinit var gridView: GridView
     private lateinit var progress: ProgressBar
+    private lateinit var searchInput: EditText
+    private lateinit var categorySpinner: Spinner
 
     private lateinit var viewModel: ChannelViewModel
 
@@ -67,29 +70,25 @@ class MainActivity : AppCompatActivity() {
         progress =
             findViewById(R.id.progress)
 
-        // အရင် playlist ရှိရင် ပြန်ပြ
+        searchInput =
+            findViewById(R.id.searchInput)
+
+        categorySpinner =
+            findViewById(R.id.categorySpinner)
+
         if (viewModel.channels.isNotEmpty()) {
-
-            showChannels(
-                viewModel.channels
-            )
+            updateCategories()
+            showChannels(viewModel.channels)
         }
 
-        // အရင် URL ရှိရင် ပြန်ထည့်
         if (viewModel.savedUrl.isNotEmpty()) {
-
-            urlInput.setText(
-                viewModel.savedUrl
-            )
+            urlInput.setText(viewModel.savedUrl)
         }
 
-        // LOAD URL
         loadUrlButton.setOnClickListener {
 
             val url =
-                urlInput.text
-                    .toString()
-                    .trim()
+                urlInput.text.toString().trim()
 
             if (url.isEmpty()) {
 
@@ -102,32 +101,23 @@ class MainActivity : AppCompatActivity() {
             } else {
 
                 viewModel.savedUrl = url
-
                 loadM3U(url)
             }
         }
 
-        // SELECT FILE
         fileButton.setOnClickListener {
-
             filePicker.launch("*/*")
         }
 
-        // CHANNEL CLICK
-        gridView.setOnItemClickListener {
+        gridView.setOnItemClickListener { _, _, position, _ ->
 
-                _,
-                _,
-                position,
-                _ ->
+            val adapter =
+                gridView.adapter as? ArrayAdapter<Channel>
 
-            if (
-                position >= 0 &&
-                position < viewModel.channels.size
-            ) {
+            val channel =
+                adapter?.getItem(position)
 
-                val channel =
-                    viewModel.channels[position]
+            if (channel != null) {
 
                 val intent =
                     Intent(
@@ -148,11 +138,49 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-    }
 
-    // =========================
-    // LOAD M3U URL
-    // =========================
+        searchInput.addTextChangedListener(
+            object : android.text.TextWatcher {
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {}
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                    filterChannels()
+                }
+
+                override fun afterTextChanged(
+                    s: android.text.Editable?
+                ) {}
+            }
+        )
+
+        categorySpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    filterChannels()
+                }
+
+                override fun onNothingSelected(
+                    parent: AdapterView<*>?
+                ) {}
+            }
+    }
 
     private fun loadM3U(
         m3uUrl: String
@@ -189,14 +217,10 @@ class MainActivity : AppCompatActivity() {
                 ) {
 
                     viewModel.channels.clear()
+                    viewModel.channels.addAll(result)
 
-                    viewModel.channels.addAll(
-                        result
-                    )
-
-                    showChannels(
-                        viewModel.channels
-                    )
+                    updateCategories()
+                    showChannels(viewModel.channels)
 
                     progress.visibility =
                         View.GONE
@@ -239,10 +263,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // =========================
-    // LOAD M3U FILE
-    // =========================
-
     private fun loadM3UFile(
         uri: Uri
     ) {
@@ -281,14 +301,10 @@ class MainActivity : AppCompatActivity() {
                 ) {
 
                     viewModel.channels.clear()
+                    viewModel.channels.addAll(result)
 
-                    viewModel.channels.addAll(
-                        result
-                    )
-
-                    showChannels(
-                        viewModel.channels
-                    )
+                    updateCategories()
+                    showChannels(viewModel.channels)
 
                     progress.visibility =
                         View.GONE
@@ -331,9 +347,64 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // =========================
-    // SHOW CHANNEL CARDS
-    // =========================
+    private fun updateCategories() {
+
+        val categories =
+            ArrayList<String>()
+
+        categories.add("All")
+
+        viewModel.channels.forEach {
+
+            if (
+                it.category.isNotBlank() &&
+                !categories.contains(it.category)
+            ) {
+                categories.add(it.category)
+            }
+        }
+
+        val adapter =
+            ArrayAdapter(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                categories
+            )
+
+        categorySpinner.adapter =
+            adapter
+    }
+
+    private fun filterChannels() {
+
+        val search =
+            searchInput.text
+                .toString()
+                .trim()
+                .lowercase()
+
+        val category =
+            categorySpinner.selectedItem
+                ?.toString()
+                ?: "All"
+
+        val filtered =
+            viewModel.channels.filter {
+
+                val nameMatch =
+                    it.name
+                        .lowercase()
+                        .contains(search)
+
+                val categoryMatch =
+                    category == "All" ||
+                    it.category == category
+
+                nameMatch && categoryMatch
+            }
+
+        showChannels(filtered)
+    }
 
     private fun showChannels(
         channels: List<Channel>
@@ -368,9 +439,18 @@ class MainActivity : AppCompatActivity() {
                             R.id.channelName
                         )
 
+                    val category =
+                        view.findViewById<TextView>(
+                            R.id.channelCategory
+                        )
+
                     name.text =
                         channel?.name
                             ?: "Unknown Channel"
+
+                    category.text =
+                        channel?.category
+                            ?: "TV"
 
                     return view
                 }
@@ -379,10 +459,6 @@ class MainActivity : AppCompatActivity() {
         gridView.adapter =
             adapter
     }
-
-    // =========================
-    // PARSE M3U
-    // =========================
 
     private fun parseM3U(
         text: String
@@ -396,4 +472,52 @@ class MainActivity : AppCompatActivity() {
                 .map {
                     it.trim()
                 }
-                .filter
+                .filter {
+                    it.isNotEmpty()
+                }
+
+        var channelName = ""
+        var category = "All"
+
+        for (line in lines) {
+
+            if (
+                line.startsWith("#EXTINF")
+            ) {
+
+                channelName =
+                    line.substringAfter(
+                        ",",
+                        "Unknown Channel"
+                    ).trim()
+
+                val group =
+                    Regex(
+                        """group-title="([^"]*)""""
+                    ).find(line)
+
+                category =
+                    group?.groupValues?.get(1)
+                        ?: "All"
+
+            } else if (
+                !line.startsWith("#") &&
+                channelName.isNotEmpty()
+            ) {
+
+                result.add(
+                    Channel(
+                        name = channelName,
+                        url = line,
+                        category = category
+                    )
+                )
+
+                channelName = ""
+                category = "All"
+            }
+        }
+
+        return result
+    }
+}
