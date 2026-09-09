@@ -70,15 +70,18 @@ class MainActivity : AppCompatActivity() {
 
         listView.setOnItemClickListener { _, _, position, _ ->
 
-            val channel = channels[position]
+            if (position < channels.size) {
 
-            val intent =
-                Intent(this, PlayerActivity::class.java)
+                val channel = channels[position]
 
-            intent.putExtra("name", channel.name)
-            intent.putExtra("url", channel.url)
+                val intent =
+                    Intent(this, PlayerActivity::class.java)
 
-            startActivity(intent)
+                intent.putExtra("name", channel.name)
+                intent.putExtra("url", channel.url)
+
+                startActivity(intent)
+            }
         }
     }
 
