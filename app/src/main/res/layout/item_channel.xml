@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
+    android:layout_height="165dp"
     android:layout_margin="4dp"
     app:cardBackgroundColor="#151B22"
     app:cardCornerRadius="16dp"
@@ -19,14 +19,14 @@
         android:gravity="center"
         android:padding="10dp">
 
-        <TextView
-            android:id="@+id/channelIcon"
+        <ImageView
+            android:id="@+id/channelLogo"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            android:text="📺"
-            android:textSize="38sp"
-            android:gravity="center"
-            android:background="#202A35" />
+            android:src="@android:drawable/ic_media_play"
+            android:scaleType="fitCenter"
+            android:background="#202A35"
+            android:padding="10dp" />
 
         <TextView
             android:id="@+id/channelName"
